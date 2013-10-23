@@ -1,0 +1,79 @@
+<?php
+
+class AccountGroupQuestCommand extends CConsoleCommand
+{
+    private function usage()
+    {
+        echo "Usage: AccountGroupQuest start\n"; 
+    }
+
+    private function start()
+    {
+        //table
+        $groupQuest = GroupQuest::model()->findBySql('SELECT * FROM groupQuest WHERE end<:time ORDER BY end DESC', array(':time'=>time()));
+        if (empty($groupQuest)) {
+            return ;
+        }
+        $start = date('Y/m/d', $groupQuest->start);
+        $end = date('Y/m/d', $groupQuest->end);
+        $tableName = 'groupQuestData'.'_'.$start.'-'.$end;
+
+        //clear
+        Yii::app()->db->createCommand('DELETE FROM medal WHERE medalId IN ('.MEDAL_GROUPQUEST_BRONZE.','.MEDAL_GROUPQUEST_SILVER.','.MEDAL_GROUPQUEST_GOLD.') AND getTime<='.$groupQuest->start)->execute();
+
+        //rank
+        $playerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE isRank=0')->queryColumn();
+        foreach ($playerIds as $playerId) {
+            $data = Yii::app()->db->createCommand('SELECT battle, win, groupId FROM '.$tableName.' WHERE playerId='.$playerId)->queryRaw();
+            if ($data['battle'] >= $groupQuest->battle) {
+                $rank = Yii::app()->db->createCommand('SELECT COUNT(*) FROM '.$tableName.' WHERE win>:win AND groupId=:groupId')->bindValues(array(
+                    ':win'=>$data['win'], 
+                    ':groupId'=>$data['groupId'],
+                ))->queryScalar() + 1;
+                Yii::app()->db->createCommand('UPDATE '.$tableName.' SET rank='.$rank.', isRank=1 WHERE playerId='.$playerId)->execute();
+            } else {
+                Yii::app()->db->createCommand('UPDATE '.$tableName.' SET isRank=1 WHERE playerId='.$playerId)->execute();
+            }
+        }
+
+        //gold
+        $goldPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':battle' => $groupQuest->battle,
+            ':rank' => $groupQuest->gold,
+        ))->queryColumn();
+
+        //silver
+        $silverPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':battle' => $groupQuest->battle,
+            ':rank' => $groupQuest->gold+$groupQuest->silver,
+        ))->queryColumn();
+
+        //bronze
+        $bronzePlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':battle' => $groupQuest->battle,
+            ':rank' => $groupQuest->gold+$groupQuest->silver+$groupQuest->bronze,
+        ))->queryColumn();
+
+        $bronzePlayerIds = array_diff($bronzePlayerIds, $silverPlayerIds);
+        $silverPlayerIds = array_diff($silverPlayerIds, $goldPlayerIds);
+
+        //medal 
+        BPMedal::createMore($goldPlayerIds, MEDAL_GROUPQUEST_GOLD, $groupQuest->end);
+        BPQuestManager::updateMedal($goldPlayerIds, MEDAL_GROUPQUEST_GOLD, $tableName);
+        BPMedal::createMore($silverPlayerIds, MEDAL_GROUPQUEST_SILVER, $groupQuest->end);
+        BPQuestManager::updateMedal($silverPlayerIds, MEDAL_GROUPQUEST_SILVER, $tableName);
+        BPMedal::createMore($bronzePlayerIds, MEDAL_GROUPQUEST_BRONZE, $groupQuest->end);
+        BPQuestManager::updateMedal($bronzePlayerIds, MEDAL_GROUPQUEST_BRONZE, $tableName);
+    }
+
+    public function run($args)
+    {
+        if (isset($args[0]) && $args[0]=='start') {
+            $this->start();
+        } else {
+            return $this->usage();
+        }
+
+    }
+}
+

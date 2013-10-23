@@ -1,0 +1,70 @@
+<?php
+
+class GenerateGroupQuestDataCommand extends CConsoleCommand
+{
+    private function usage()
+    {
+        echo "Usage: GenerateGroupQuestData start\n"; 
+    }
+
+    private function start()
+    {
+        //table 
+        $groupQuest = GroupQuest::model()->findBySql('SELECT * FROM groupQuest WHERE start>:time', array(':time'=>time()));
+        if ($groupQuest) {
+            return ;
+        }
+        $start = date('Y/m/d', $groupQuest->start);
+        $end = date('Y/m/d', $groupQuest->end);
+        $tableName = 'groupQuestData'.'_'.$start.'-'.$end;
+
+        //generate
+        $players = Yii::app()->db->createCommand('SELECT playerId, name, `character` FROM player')->queryColumn();
+        $totalPlayer = count($players);
+        $totalGroup = ceil($totalPlayer/$groupQuest->population); 
+        for ($i = 1; $i <= $totalGroup; $i++) {
+            $j = 0;
+            while($j<$groupQuest->population && !empty($players)) {
+                $player = array_rand($players);
+                $playerId = $player['playerId'];
+                $data[$playerId] = array(
+                    'name' => $player['name'],
+                    'character' => $player['character'],
+                    'groupId' => $i,
+                );
+                unset($players[array_search($player, $players)]);
+                $j++;
+            }
+        }
+        
+        foreach ($data as $playerId=>$player) {
+            $string[] = '('.$playerId.','.$player['name'].','.$player['character'].','.$groupId.')';
+        }
+        $sqlString = implode(',', $string);
+
+        $data = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName)->queryScalar();
+        if (empty($data)) {
+            $transaction = Yii::app()->db->beginTransaction();
+            try {
+                Yii::app()->db->createCommand(
+                    'INSERT INTO '.$tableName.' VALUES '.$sqlString 
+                    )->execute();
+                $transaction->commit();
+            } catch (Exception $e) {
+                $transaction->rollback();
+                throw $e;
+            }
+        }
+
+    }
+
+    public function run($args)
+    {
+        if (isset($args[0]) && $args[0]=='start') {
+            $this->start();
+        } else {
+            return $this->usage();
+        }
+
+    }
+}

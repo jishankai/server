@@ -1,0 +1,64 @@
+<?php
+
+class GenerateWeekQuestDataCommand extends CConsoleCommand
+{
+    private function usage()
+    {
+        echo "Usage: GenerateWeekQuestData start\n"; 
+    }
+
+    private function start()
+    {
+        //table
+        $weekQuest = WeekQuest::model()->findBySql('SELECT * FROM weekQuest WHERE start>:time', array(':time'=>time()));
+        if (empty($weekQuest)) {
+            return ;
+        }
+        $start = date('Y/m/d', $weekQuest->start);
+        $end = date('Y/m/d', $weekQuest->end);
+        $tableName = 'weekQuestData'.'_'.$start.'-'.$end; 
+
+        //last table
+        $lastWeekQuest = WeekQuest::model()->findBySql('SELECT * FROM weekQuest WHERE end<:time ORDER BY end DESC', array(':time'=>time()));
+        $start = date('Y/m/d', $lastWeekQuest->start);
+        $end = date('Y/m/d', $lastWeekQuest->end);
+        $lastTableName = 'weekQuestData'.'_'.$start.'-'.$end;
+
+        //generate
+        $data = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName)->queryScalar();
+        if (empty($data)) {
+            $transaction = Yii::app()->db->beginTransaction();
+            try {
+                $lastQuestData = Yii::app()->db->createCommand('SELECT playerId FROM '.$lastTableName)->queryScalar();
+                if (empty($lastQuestData)) {
+                    Yii::app()->db->createCommand('
+                        INSERT INTO '.$tableName.'(playerId, name, `character`, groupId, createTime) SELECT playerId, name, character, 0, createTime FROM player 
+                        ')->execute();
+                } else {
+                    Yii::app()->db->createCommand('
+                        INSERT INTO '.$tableName.'(playerId, name, `character`, groupId, medalId, createTime) SELECT * FROM (SELECT player.playerId, player.name, player.character, '.$lastTableName.'.groupId, '.$lastTableName.'.medalId, player.createTime FROM player JOIN '.$lastTableName.') AS tb  
+                        ')->execute();
+                    Yii::app()->db->createCommand('UPDATE '.$tableName.' SET groupId=groupId+1 WHERE (medalId/3)=2 AND groupId<7')->execute();
+                    Yii::app()->db->createCommand('UPDATE '.$tableName.' SET groupId=groupId-1 WHERE medalId IS NULL AND groupId>0')->execute();
+                    Yii::app()->db->createCommand('UPDATE '.$tableName.' SET medalId=NULL')->execute();
+                }
+
+                $transaction->commit();
+            } catch (Exception $e) {
+                $transaction->rollback();
+                throw $e;
+            }
+        }
+    }
+
+    public function run($args)
+    {
+        if (isset($args[0]) && $args[0]=='start') {
+            $this->start();
+        } else {
+            return $this->usage();
+        }
+
+    }
+}
+

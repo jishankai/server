@@ -1,0 +1,158 @@
+<?php
+
+class AccountMonthQuestCommand extends CConsoleCommand
+{
+    private function usage()
+    {
+        echo "Usage: AccountMonthQuest start\n"; 
+    }
+
+    private function start()
+    {
+        //table
+        $monthQuest = MonthQuest::model()->findBySql('SELECT * FROM monthQuest WHERE end<:time ORDER BY end DESC', array(':time'=>time()));
+        if ($monthQuest) {
+            return ;
+        }
+        $month = date('Y/m', $monthQuest->start);
+        $tableName = 'monthQuestData'.'_'.$month;
+        
+        //clear
+        Yii::app()->db->createCommand('DELETE FROM medal WHERE medalId IN ('.MEDAL_MONTHQUEST_ATK_BRONZE.','.MEDAL_MONTHQUEST_ATK_SILVER.','.MEDAL_MONTHQUEST_ATK_GOLD.','.MEDAL_MONTHQUEST_DEF_BRONZE.','.MEDAL_MONTHQUEST_DEF_SILVER.','.MEDAL_MONTHQUEST_DEF_GOLD.','.MEDAL_MONTHQUEST_COMBO_BRONZE.','.MEDAL_MONTHQUEST_COMBO_SILVER.','.MEDAL_MONTHQUEST_COMBO_GOLD.') AND getTime<='.$start)->execute();
+        
+        //rank
+        $playerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE isAtkRank=0')->queryColumn();
+        foreach ($playerIds as $playerId) {
+            $data = Yii::app()->db->createCommand('SELECT battle, aveatk FROM '.$tableName.' WHERE playerId='.$playerId)->queryRow();
+            if ($data['battle']>=$monthQuest->battle) {
+                $atkRank = Yii::app()->db->createCommand('SELECT COUNT(*) FROM '.$tableName.' WHERE aveatk>:aveatk AND battle>=:battle')->bindValues(array(
+                    ':aveatk' => $data['aveatk'],
+                    ':battle' => $monthQuest->battle,
+                ))->queryScalar() + 1;
+                Yii::app()->db->createCommand('UPDATE '.$tableName.' SET atkRank='.$atkRank.', isAtkRank=1 WHERE playerId='.$playerId)->execute();
+            } else {
+                Yii::app()->db->createCommand('UPDATE '.$tableName.' SET isAtkRank=1 WHERE playerId='.$playerId)->execute();
+            }
+        }
+
+        $playerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE isDefRank=0')->queryColumn();
+        foreach ($playerIds as $playerId) {
+            $data = Yii::app()->db->createCommand('SELECT battle, avedef FROM '.$tableName.' WHERE playerId='.$playerId)->queryScalar();
+            if ($data['battle']>=$monthQuest->battle) {
+                $atkRank = Yii::app()->db->createCommand('SELECT COUNT(*) FROM '.$tableName.' WHERE avedef>:avedef AND battle>=:battle')->bindValues(array(
+                    ':avedef' => $data['avedef'],
+                    ':battle' => $monthQuest->battle,
+                ))->queryScalar() + 1;
+                Yii::app()->db->createCommand('UPDATE '.$tableName.' SET defRank='.$defRank.', isDefRank=1 WHERE playerId='.$playerId)->execute();
+            } else {
+                Yii::app()->db->createCommand('UPDATE '.$tableName.' SET isDefRank=1 WHERE playerId='.$playerId)->execute();
+            }
+        }
+
+        $playerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE isComboRank=0')->queryColumn();
+        foreach ($playerIds as $playerId) {
+            $data = Yii::app()->db->createCommand('SELECT battle, avecombo FROM '.$tableName.' WHERE playerId='.$playerId)->queryScalar();
+            if ($data['battle']>=$monthQuest->battle) {
+                $atkRank = Yii::app()->db->createCommand('SELECT COUNT(*) FROM '.$tableName.' WHERE avecombo>:avecombo AND battle>=:battle')->bindValues(array(
+                    ':avecombo' => $data['avecombo'],
+                    ':battle' => $monthQuest->battle,
+                ))->queryScalar() + 1;
+                Yii::app()->db->createCommand('UPDATE '.$tableName.' SET comboRank='.$comboRank.', isComboRank=1 WHERE playerId='.$playerId)->execute();
+            } else {
+                Yii::app()->db->createCommand('UPDATE '.$tableName.' SET isComboRank=1 WHERE playerId='.$playerId)->execute();
+            }
+        }
+
+        //gold
+        $atkGoldPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE battle>=:battle AND atkRank<=:atkRank AND isAtkMedal=0')->bindValues(array(
+            ':battle' => $monthQuest->goldBattle,
+            ':atkRank' => $monthQuest->goldRank,
+        ))->queryColumn();
+
+        $defGoldPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE battle>=:battle AND defRank<=:defRank AND isDefMedal=0')->bindValues(array(
+            ':battle' => $monthQuest->goldBattle,
+            ':defRank' => $monthQuest->goldRank,
+        ))->queryColumn();
+
+        $comboGoldPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE battle>=:battle AND comboRank<=:comboRank AND isComboMedal=0')->bindValues(array(
+            ':battle' => $monthQuest->goldBattle,
+            ':comboRank' => $monthQuest->goldRank,
+        ))->queryColumn();
+        
+        //silver
+        $atkSilverPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE battle>=:battle AND atkRank<=:atkRank AND isAtkMedal=0')->bindValues(array(
+            ':battle' => $monthQuest->silverBattle,
+            ':atkRank' => $monthQuest->silverRank,
+        ))->queryColumn();
+
+        $defSilverPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE battle>=:battle AND defRank<=:defRank AND isDefMedal=0')->bindValues(array(
+            ':battle' => $monthQuest->silverBattle,
+            ':defRank' => $monthQuest->silverRank,
+        ))->queryColumn();
+
+        $comboSilverPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE battle>=:battle AND comboRank<=:comboRank AND isComboMedal=0')->bindValues(array(
+            ':battle' => $monthQuest->silverBattle,
+            ':comboRank' => $monthQuest->silverRank,
+        ))->queryColumn();
+        
+        //bronze
+        $atkBronzePlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE battle>=:battle AND atkRank<=:atkRank AND isAtkMedal=0')->bindValues(array(
+            ':battle' => $monthQuest->bronzeBattle,
+            ':atkRank' => $monthQuest->bronzeRank,
+        ))->queryColumn();
+
+        $defBronzePlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE battle>=:battle AND defRank<=:defRank AND isDefMedal=0')->bindValues(array(
+            ':battle' => $monthQuest->bronzeBattle,
+            ':defRank' => $monthQuest->bronzeRank,
+        ))->queryColumn();
+
+        $comboBronzePlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE battle>=:battle AND comboRank<=:comboRank AND isComboMedal=0')->bindValues(array(
+            ':battle' => $monthQuest->bronzeBattle,
+            ':comboRank' => $monthQuest->bronzeRank,
+        ))->queryColumn();
+        
+
+        $atkBronzePlayerIds = array_diff($atkBronzePlayerIds, $atkSilverPlayerIds);
+        $atkSilverPlayerIds = array_diff($atkSilverPlayerIds, $atkGoldPlayerIds);
+
+        $defBronzePlayerIds = array_diff($defBronzePlayerIds, $defSilverPlayerIds);
+        $defSilverPlayerIds = array_diff($defSilverPlayerIds, $defGoldPlayerIds);
+
+        $comboBronzePlayerIds = array_diff($comboBronzePlayerIds, $comboSilverPlayerIds);
+        $comboSilverPlayerIds = array_diff($comboSilverPlayerIds, $comboGoldPlayerIds);
+
+        //medal 
+        BPMedal::createMore($atkGoldPlayerIds, MEDAL_MONTHQUEST_ATK_GOLD, $monthQuest->end);
+        BPQuestManager::updateMedal($atkGoldPlayerIds, MEDAL_MONTHQUEST_ATK_GOLD, $tableName);
+        BPMedal::createMore($atkSilverPlayerIds, MEDAL_MONTHQUEST_ATK_SILVER, $monthQuest->end);
+        BPQuestManager::updateMedal($silverGoldPlayerIds, MEDAL_MONTHQUEST_ATK_SILVER, $tableName);
+        BPMedal::createMore($atkBronzePlayerIds, MEDAL_MONTHQUEST_ATK_BRONZE, $monthQuest->end);
+        BPQuestManager::updateMedal($atkBronzePlayerIds, MEDAL_MONTHQUEST_ATK_BRONZE, $tableName);
+
+        BPMedal::createMore($defGoldPlayerIds, MEDAL_MONTHQUEST_DEF_GOLD, $monthQuest->end);
+        BPQuestManager::updateMedal($defGoldPlayerIds, MEDAL_MONTHQUEST_DEF_GOLD, $tableName);
+        BPMedal::createMore($defSilverPlayerIds, MEDAL_MONTHQUEST_DEF_SILVER, $monthQuest->end);
+        BPQuestManager::updateMedal($defSilverPlayerIds, MEDAL_MONTHQUEST_DEF_GOLD, $tableName);
+        BPMedal::createMore($defBronzePlayerIds, MEDAL_MONTHQUEST_DEF_BRONZE, $monthQuest->end);
+        BPQuestManager::updateMedal($defBronzePlayerIds, MEDAL_MONTHQUEST_DEF_GOLD, $tableName);
+        
+
+        BPMedal::createMore($comboGoldPlayerIds, MEDAL_MONTHQUEST_COMBO_GOLD, $monthQuest->end);
+        BPQuestManager::updateMedal($comboGoldPlayerIds, MEDAL_MONTHQUEST_COMBO_GOLD, $tableName);
+        BPMedal::createMore($comboSilverPlayerIds, MEDAL_MONTHQUEST_COMBO_SILVER, $monthQuest->end);
+        BPQuestManager::updateMedal($comboSilverPlayerIds, MEDAL_MONTHQUEST_COMBO_SILVER, $tableName);
+        BPMedal::createMore($comboBronzePlayerIds, MEDAL_MONTHQUEST_COMBO_BRONZE, $monthQuest->end);
+        BPQuestManager::updateMedal($comboBronzePlayerIds, MEDAL_MONTHQUEST_COMBO_BRONZE, $tableName);
+
+    }
+
+    public function run($args)
+    {
+        if (isset($args[0]) && $args[0]=='start') {
+            $this->start();
+        } else {
+            return $this->usage();
+        }
+
+    }
+}

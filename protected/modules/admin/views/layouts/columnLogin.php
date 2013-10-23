@@ -1,0 +1,42 @@
+
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head><meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="shortcut icon" href="/demos/stable/app/themes/default/ico/favicon.ico" />
+<link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/web.css" />
+<title>Sign in</title>
+<style>
+.form input[type="text"],
+.form input[type="password"]{
+ width: 100%;
+}
+
+</style>
+</head>
+<body>
+
+
+<div id="LoginPageView" class="ZurmoPageView PageView">
+<div class="GridView">
+<div id="LoginView" class="clearfix background-3" style="height: 834px; "><!-- Start of themes/default/templates/LoginView.xhtml -->
+<div id="login-box" class="clearfix">
+    <div id="LoginLogo" class="zurmo-logo"></div>
+   
+
+	<?php echo $content; ?>
+	
+</div>
+<!-- End of themes/default/templates/LoginView.xhtml --></div><div id="FooterView"><!-- Start of themes/default/templates/FooterView.xhtml --><a href="" id="credit-link" class="clearfix">
+    <span>Copyright&copy TCAT. All Rights reserved.</span>
+</a>
+<!-- End of themes/default/templates/FooterView.xhtml --></div></div></div>
+
+</body>
+</html>
+
+
+
+
+
+
+

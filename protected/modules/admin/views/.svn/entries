@@ -1,0 +1,52 @@
+10
+
+dir
+912
+svn+ssh://ji.shankai@192.168.1.60/var/svnroot/bubblepvp/src/server/trunk/bubblepvp/protected/modules/admin/views
+svn+ssh://ji.shankai@192.168.1.60/var/svnroot/bubblepvp
+
+
+
+2013-04-28T10:01:27.199579Z
+861
+ji.shankai
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+fecc7362-38a5-426f-9f4d-e4ad4ead953e
+
+layouts
+dir
+
+event
+dir
+
+notice
+dir
+
+site
+dir
+
+sales
+dir
+
+player
+dir
+
+news
+dir
+
+user
+dir
+

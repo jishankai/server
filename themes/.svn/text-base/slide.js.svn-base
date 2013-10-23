@@ -1,0 +1,72 @@
+window.onload=function(){
+	var oUl=document.getElementById("slide");
+	var oPrev=document.getElementById("prev");
+	var oNext=document.getElementById("next");
+	var oLi=oUl.getElementsByTagName("li");
+
+	oPrev.onselectstart=function(){return false};
+	oNext.onselectstart=function(){return false};
+	var i=0;
+	var timer=null;
+	var autotab=null;
+	var oWidth=oLi[0].offsetWidth+6;
+	var str=oUl.innerHTML+oUl.innerHTML	
+	oUl.innerHTML=str;
+	oUl.style.width=oLi.length*oWidth+"px";
+
+	function tab(speed){		
+		clearInterval(timer);
+		if(speed==-44){
+			if(oUl.offsetLeft<=-oWidth*oLi.length/2){
+				oUl.style.left='0';
+				i=0;
+			};
+			timer=setInterval(function(){
+				if(oUl.offsetLeft>-oWidth*i){
+					oUl.style.left=oUl.offsetLeft+speed+"px";
+				}
+			},30,this);
+			i=i+1;
+		}
+		else if(speed==44){
+			if(oUl.offsetLeft>=0){
+				oUl.style.left=-oWidth*oLi.length/2+"px";
+				i=oLi.length/2;
+			};	
+			timer=setInterval(function(){
+				if(oUl.offsetLeft<-oWidth*i){
+					oUl.style.left=oUl.offsetLeft+speed+"px";
+				};
+			},30);
+			i=i-1;
+		}
+	};
+
+	function startmove(){
+		if(autotab){
+			clearInterval(autotab);
+		}	
+		autotab=setInterval(function(){
+			tab(-44);
+		},3000);
+	};
+	function stopmove(){
+		clearInterval(autotab);
+		autotab=null;
+	}
+	startmove();
+
+	oNext.onclick=function(){
+		tab(-44);
+	};	
+
+	oPrev.onclick=function(){
+		tab(44);
+	};
+	oUl.onmouseover=function(){
+		stopmove();
+	};
+	oUl.onmouseout=function(){
+		startmove();
+	};
+};

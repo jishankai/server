@@ -1,0 +1,251 @@
+<?php
+
+class AccountWeekQuestCommand extends CConsoleCommand
+{
+    private function usage()
+    {
+        echo "Usage: AccountWeekQuest start\n"; 
+    }
+
+    private function start()
+    {
+        //table
+        $weekQuest = WeekQuest::model()->findBySql('SELECT * FROM weekQuest WHERE end<:time ORDER BY end DESC', array(':time'=>time()));
+        if (empty($weekQuest)) {
+            return ;
+        }
+        $start = date('Y/m/d', $weekQuest->start);
+        $end = date('Y/m/d', $weekQuest->end);
+        $tableName = 'weekQuestData'.'_'.$start.'-'.$end;
+        
+        //clear
+        Yii::app()->db->createCommand('DELETE FROM medal WHERE medalId IN ('.MEDAL_WEEKQUEST_A_BRONZE.','.MEDAL_WEEKQUEST_A_SILVER.','.MEDAL_WEEKQUEST_A_GOLD.','.MEDAL_WEEKQUEST_B_BRONZE.','.MEDAL_WEEKQUEST_B_SILVER.','.MEDAL_WEEKQUEST_B_GOLD.','.MEDAL_WEEKQUEST_C_BRONZE.','.MEDAL_WEEKQUEST_C_SILVER.','.MEDAL_WEEKQUEST_C_GOLD.','.MEDAL_WEEKQUEST_D_BRONZE.','.MEDAL_WEEKQUEST_D_SILVER.','.MEDAL_WEEKQUEST_D_GOLD.','.MEDAL_WEEKQUEST_E_BRONZE.','.MEDAL_WEEKQUEST_E_SILVER.','.MEDAL_WEEKQUEST_E_GOLD.','.MEDAL_WEEKQUEST_F_BRONZE.','.MEDAL_WEEKQUEST_F_SILVER.','.MEDAL_WEEKQUEST_F_GOLD.','.MEDAL_WEEKQUEST_S_BRONZE.','.MEDAL_WEEKQUEST_S_SILVER.','.MEDAL_WEEKQUEST_S_GOLD.','.MEDAL_WEEKQUEST_N_BRONZE.','.MEDAL_WEEKQUEST_N_SILVER.','.MEDAL_WEEKQUEST_N_GOLD.') AND getTime<='.$weekQuest->start)->execute();
+        
+        //rank
+        $playerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE isRank=0')->queryColumn();
+        foreach ($playerIds as $playerId) {
+            $data = Yii::app()->db->createCommand('SELECT battle, win, groupId FROM '.$tableName.' WHERE playerId='.$playerId)->queryRow();
+            $group = BPQuestManager::mapGroup($data['groupId']);
+            if ($data['battle'] >= $weekQuest->$group) {
+                $rank = Yii::app()->db->createCommand('SELECT COUNT(*) FROM '.$tableName.' WHERE battle>=:battle AND win>:win AND groupId=:groupId')->bindValues(array(
+                    ':battle' => $weekQuest->$group,
+                    ':win' => $data['win'],
+                    ':groupId' => $data['groupId'],
+                ))->queryScalar() + 1;
+                Yii::app()->db->createCommand('UPDATE '.$tableName.' SET rank='.$rank.', isRank=1 WHERE playerId='.$playerId)->execute();
+            } else {
+                Yii::app()->db->createCommand('UPDATE '.$tableName.' SET isRank=1 WHERE playerId='.$playerId)->execute();
+            }
+        }
+        
+        //gold
+        $a_GoldPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 6,
+            ':battle' => $weekQuest->a,
+            ':rank' => round($weekQuest->gold*WEEKQUEST_A_POPULATION/100),
+        ))->queryColumn();
+        $b_GoldPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 5,
+            ':battle' => $weekQuest->b,
+            ':rank' => round($weekQuest->gold*WEEKQUEST_B_POPULATION/100),
+        ))->queryColumn();
+        $c_GoldPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 4,
+            ':battle' => $weekQuest->c,
+            ':rank' => round($weekQuest->gold*WEEKQUEST_C_POPULATION/100),
+        ))->queryColumn();
+        $d_GoldPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 3,
+            ':battle' => $weekQuest->d,
+            ':rank' => round($weekQuest->gold*WEEKQUEST_D_POPULATION/100),
+        ))->queryColumn();
+        $e_GoldPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 2,
+            ':battle' => $weekQuest->e,
+            ':rank' => round($weekQuest->gold*WEEKQUEST_E_POPULATION/100),
+        ))->queryColumn();
+        $f_GoldPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 1,
+            ':battle' => $weekQuest->f,
+            ':rank' => round($weekQuest->gold*WEEKQUEST_F_POPULATION/100),
+        ))->queryColumn();
+        $s_GoldPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 7,
+            ':battle' => $weekQuest->s,
+            ':rank' => round($weekQuest->gold*WEEKQUEST_S_POPULATION/100),
+        ))->queryColumn();
+        $n_GoldPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 0,
+            ':battle' => $weekQuest->n,
+            ':rank' => round($weekQuest->bronze*WEEKQUEST_F_POPULATION/100),
+        ))->queryColumn();
+
+        //silver
+        $a_SilverPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 6,
+            ':battle' => $weekQuest->a,
+            ':rank' => round($weekQuest->silver*WEEKQUEST_A_POPULATION/100),
+        ))->queryColumn();
+        $b_SilverPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 5,
+            ':battle' => $weekQuest->b,
+            ':rank' => round($weekQuest->silver*WEEKQUEST_B_POPULATION/100),
+        ))->queryColumn();
+        $c_SilverPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 4,
+            ':battle' => $weekQuest->c,
+            ':rank' => round($weekQuest->silver*WEEKQUEST_C_POPULATION/100),
+        ))->queryColumn();
+        $d_SilverPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 3,
+            ':battle' => $weekQuest->d,
+            ':rank' => round($weekQuest->silver*WEEKQUEST_D_POPULATION/100),
+        ))->queryColumn();
+        $e_SilverPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 2,
+            ':battle' => $weekQuest->e,
+            ':rank' => round($weekQuest->silver*WEEKQUEST_E_POPULATION/100),
+        ))->queryColumn();
+        $f_SilverPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 1,
+            ':battle' => $weekQuest->f,
+            ':rank' => round($weekQuest->silver*WEEKQUEST_F_POPULATION/100),
+        ))->queryColumn();
+        $s_SilverPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 7,
+            ':battle' => $weekQuest->s,
+            ':rank' => round($weekQuest->silver*WEEKQUEST_S_POPULATION/100),
+        ))->queryColumn();
+        $n_SilverPlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 0,
+            ':battle' => $weekQuest->n,
+            ':rank' => round($weekQuest->silver/$weekQuest->gold*WEEKQUEST_F_POPULATION),
+        ))->queryColumn();
+        
+        //bronze
+        $a_BronzePlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 6,
+            ':battle' => $weekQuest->a,
+            ':rank' => round($weekQuest->bronze*WEEKQUEST_A_POPULATION/100),
+        ))->queryColumn();
+        $b_BronzePlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 5,
+            ':battle' => $weekQuest->b,
+            ':rank' => round($weekQuest->bronze*WEEKQUEST_B_POPULATION/100),
+        ))->queryColumn();
+        $c_BronzePlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 4,
+            ':battle' => $weekQuest->c,
+            ':rank' => round($weekQuest->bronze*WEEKQUEST_C_POPULATION/100),
+        ))->queryColumn();
+        $d_BronzePlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 3,
+            ':battle' => $weekQuest->d,
+            ':rank' => round($weekQuest->bronze*WEEKQUEST_D_POPULATION/100),
+        ))->queryColumn();
+        $e_BronzePlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 2,
+            ':battle' => $weekQuest->e,
+            ':rank' => round($weekQuest->bronze*WEEKQUEST_E_POPULATION/100),
+        ))->queryColumn();
+        $f_BronzePlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 1,
+            ':battle' => $weekQuest->f,
+            ':rank' => round($weekQuest->bronze*WEEKQUEST_F_POPULATION/100),
+        ))->queryColumn();
+        $s_BronzePlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 7,
+            ':battle' => $weekQuest->s,
+            ':rank' => round($weekQuest->bronze*WEEKQUEST_S_POPULATION/100),
+        ))->queryColumn();
+        $n_BronzePlayerIds = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName.' WHERE groupId=:groupId AND battle>=:battle AND rank<=:rank AND isMedal=0')->bindValues(array(
+            ':groupId' => 0,
+            ':battle' => $weekQuest->n,
+            ':rank' => round($weekQuest->bronze/$weekQuest->gold*WEEKQUEST_F_POPULATION),
+        ))->queryColumn();
+
+        $a_BronzePlayerIds = array_diff($a_BronzePlayerIds, $a_SilverPlayerIds);
+        $a_SilverPlayerIds = array_diff($a_SilverPlayerIds, $a_GoldPlayerIds);
+        $b_BronzePlayerIds = array_diff($b_BronzePlayerIds, $b_SilverPlayerIds);
+        $b_SilverPlayerIds = array_diff($b_SilverPlayerIds, $b_GoldPlayerIds);
+        $c_BronzePlayerIds = array_diff($c_BronzePlayerIds, $c_SilverPlayerIds);
+        $c_SilverPlayerIds = array_diff($c_SilverPlayerIds, $c_GoldPlayerIds);
+        $d_BronzePlayerIds = array_diff($d_BronzePlayerIds, $d_SilverPlayerIds);
+        $d_SilverPlayerIds = array_diff($d_SilverPlayerIds, $d_GoldPlayerIds);
+        $e_BronzePlayerIds = array_diff($e_BronzePlayerIds, $e_SilverPlayerIds);
+        $e_SilverPlayerIds = array_diff($e_SilverPlayerIds, $e_GoldPlayerIds);
+        $f_BronzePlayerIds = array_diff($f_BronzePlayerIds, $f_SilverPlayerIds);
+        $f_SilverPlayerIds = array_diff($f_SilverPlayerIds, $f_GoldPlayerIds);
+        $s_BronzePlayerIds = array_diff($s_BronzePlayerIds, $s_SilverPlayerIds);
+        $s_SilverPlayerIds = array_diff($s_SilverPlayerIds, $s_GoldPlayerIds);
+        $n_BronzePlayerIds = array_diff($n_BronzePlayerIds, $n_SilverPlayerIds);
+        $n_SilverPlayerIds = array_diff($n_SilverPlayerIds, $n_GoldPlayerIds);
+
+        //medal 
+        BPMedal::createMore($a_GoldPlayerIds, MEDAL_WEEKQUEST_A_GOLD, $weekQuest->end);
+        BPQuestManager::updateMedal($a_GoldPlayerIds, MEDAL_WEEKQUEST_A_GOLD, $tableName);
+        BPMedal::createMore($a_SilverPlayerIds, MEDAL_WEEKQUEST_A_SILVER, $weekQuest->end);
+        BPQuestManager::updateMedal($a_SilverPlayerIds, MEDAL_WEEKQUEST_A_SILVER, $tableName);
+        BPMedal::createMore($a_BronzePlayerIds, MEDAL_WEEKQUEST_A_BRONZE, $weekQuest->end);
+        BPQuestManager::updateMedal($a_BronzePlayerIds, MEDAL_WEEKQUEST_A_BRONZE, $tableName);
+        
+        BPMedal::createMore($b_GoldPlayerIds, MEDAL_WEEKQUEST_B_GOLD, $weekQuest->end);
+        BPQuestManager::updateMedal($b_GoldPlayerIds, MEDAL_WEEKQUEST_B_GOLD, $tableName);
+        BPMedal::createMore($b_SilverPlayerIds, MEDAL_WEEKQUEST_B_SILVER, $weekQuest->end);
+        BPQuestManager::updateMedal($b_SilverPlayerIds, MEDAL_WEEKQUEST_B_SILVER, $tableName);
+        BPMedal::createMore($b_BronzePlayerIds, MEDAL_WEEKQUEST_B_BRONZE, $weekQuest->end);
+        BPQuestManager::updateMedal($b_BronzePlayerIds, MEDAL_WEEKQUEST_B_BRONZE, $tableName);
+
+        BPMedal::createMore($c_GoldPlayerIds, MEDAL_WEEKQUEST_C_GOLD, $weekQuest->end);
+        BPQuestManager::updateMedal($c_GoldPlayerIds, MEDAL_WEEKQUEST_C_GOLD, $tableName);
+        BPMedal::createMore($c_SilverPlayerIds, MEDAL_WEEKQUEST_C_SILVER, $weekQuest->end);
+        BPQuestManager::updateMedal($c_SilverPlayerIds, MEDAL_WEEKQUEST_C_SILVER, $tableName);
+        BPMedal::createMore($c_BronzePlayerIds, MEDAL_WEEKQUEST_C_BRONZE, $weekQuest->end);
+        BPQuestManager::updateMedal($c_BronzePlayerIds, MEDAL_WEEKQUEST_C_BRONZE, $tableName);
+
+        BPMedal::createMore($d_GoldPlayerIds, MEDAL_WEEKQUEST_D_GOLD, $weekQuest->end);
+        BPQuestManager::updateMedal($d_GoldPlayerIds, MEDAL_WEEKQUEST_D_GOLD, $tableName);
+        BPMedal::createMore($d_SilverPlayerIds, MEDAL_WEEKQUEST_D_SILVER, $weekQuest->end);
+        BPQuestManager::updateMedal($d_SilverPlayerIds, MEDAL_WEEKQUEST_D_SILVER, $tableName);
+        BPMedal::createMore($d_BronzePlayerIds, MEDAL_WEEKQUEST_D_BRONZE, $weekQuest->end);
+        BPQuestManager::updateMedal($d_BronzePlayerIds, MEDAL_WEEKQUEST_D_BRONZE, $tableName);
+
+        BPMedal::createMore($e_GoldPlayerIds, MEDAL_WEEKQUEST_E_GOLD, $weekQuest->end);
+        BPQuestManager::updateMedal($e_GoldPlayerIds, MEDAL_WEEKQUEST_E_GOLD, $tableName);
+        BPMedal::createMore($e_SilverPlayerIds, MEDAL_WEEKQUEST_E_SILVER, $weekQuest->end);
+        BPQuestManager::updateMedal($e_SilverPlayerIds, MEDAL_WEEKQUEST_E_SILVER, $tableName);
+        BPMedal::createMore($e_BronzePlayerIds, MEDAL_WEEKQUEST_E_BRONZE, $weekQuest->end);
+        BPQuestManager::updateMedal($e_BronzePlayerIds, MEDAL_WEEKQUEST_E_BRONZE, $tableName);
+
+        BPMedal::createMore($f_GoldPlayerIds, MEDAL_WEEKQUEST_F_GOLD, $weekQuest->end);
+        BPQuestManager::updateMedal($f_GoldPlayerIds, MEDAL_WEEKQUEST_F_GOLD, $tableName);
+        BPMedal::createMore($f_SilverPlayerIds, MEDAL_WEEKQUEST_F_SILVER, $weekQuest->end);
+        BPQuestManager::updateMedal($f_SilverPlayerIds, MEDAL_WEEKQUEST_F_SILVER, $tableName);
+        BPMedal::createMore($f_BronzePlayerIds, MEDAL_WEEKQUEST_F_BRONZE, $weekQuest->end);
+        BPQuestManager::updateMedal($f_BronzePlayerIds, MEDAL_WEEKQUEST_F_BRONZE, $tableName);
+
+        BPMedal::createMore($s_GoldPlayerIds, MEDAL_WEEKQUEST_S_GOLD, $weekQuest->end);
+        BPQuestManager::updateMedal($g_GoldPlayerIds, MEDAL_WEEKQUEST_S_GOLD, $tableName);
+        BPMedal::createMore($s_SilverPlayerIds, MEDAL_WEEKQUEST_S_SILVER, $weekQuest->end);
+        BPQuestManager::updateMedal($g_SilverPlayerIds, MEDAL_WEEKQUEST_S_SILVER, $tableName);
+        BPMedal::createMore($s_BronzePlayerIds, MEDAL_WEEKQUEST_S_BRONZE, $weekQuest->end);
+        BPQuestManager::updateMedal($s_BronzePlayerIds, MEDAL_WEEKQUEST_S_BRONZE, $tableName);
+
+        BPMedal::createMore($n_GoldPlayerIds, MEDAL_WEEKQUEST_N_GOLD, $weekQuest->end);
+        BPQuestManager::updateMedal($n_GoldPlayerIds, MEDAL_WEEKQUEST_N_GOLD, $tableName);
+        BPMedal::createMore($n_SilverPlayerIds, MEDAL_WEEKQUEST_N_SILVER, $weekQuest->end);
+        BPQuestManager::updateMedal($n_SilverPlayerIds, MEDAL_WEEKQUEST_N_SILVER, $tableName);
+        BPMedal::createMore($n_BronzePlayerIds, MEDAL_WEEKQUEST_N_BRONZE, $weekQuest->end);
+        BPQuestManager::updateMedal($n_BronzePlayerIds, MEDAL_WEEKQUEST_N_BRONZE, $tableName);
+    }
+
+    public function run($args)
+    {
+        if (isset($args[0]) && $args[0]=='start') {
+            $this->start();
+        } else {
+            return $this->usage();
+        }
+
+    }
+}

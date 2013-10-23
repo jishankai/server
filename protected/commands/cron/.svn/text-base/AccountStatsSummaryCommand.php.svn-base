@@ -1,0 +1,42 @@
+<?php
+
+class AccountStatsSummaryCommand extends CConsoleCommand
+{
+    private function usage()
+    {
+        echo "Usage: AccountStatsSummary start\n"; 
+    }
+
+    private function start()
+    {
+        $transaction = Yii::app()->db->beginTransaction();
+        try {
+            $time=time();
+            $end=strtotime(date('Y-m-d',$time));//每日新记录结束时间点
+            $start=$end-24*60*60;//开始统计时间
+            $week = date('W', $start);
+            $month = date('n', $start);
+
+            Yii::app()->db->createCommand("
+                insert ignore into
+                admin_StatsSummary(date, practice, total, world, flee, regular, createTime)
+                select $start as date, sum(playerId1=0 or playerId2=0) as practice, count(*) as total, sum(playerId1<>0 and playerId2<>0) as world, sum(reason=2 or reason=4) as flee, sum(reason=0 or reason=1) as regular, createTime from result where createTime>=$start and createTime<$end
+                ")->execute();
+            $transaction->commit();
+        } catch (Exception $e) {
+            $transaction->rollback();
+            throw $e;
+        }
+    }
+
+    public function run($args)
+    {
+        if (isset($args[0]) && $args[0]=='start') {
+            $this->start();
+        } else {
+            return $this->usage();
+        }
+
+    }
+}
+

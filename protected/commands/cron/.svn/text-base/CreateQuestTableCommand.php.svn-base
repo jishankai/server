@@ -1,0 +1,121 @@
+<?php
+
+class CreateQuestTableCommand extends CConsoleCommand
+{
+    private function usage()
+    {
+        echo "Usage: CreateQuestTable start\n"; 
+    }
+
+    private function start()
+    {
+        $weekQuests = WeekQuest::model()->findAll();
+        if (!empty($weekQuests)) {
+            foreach ($weekQuests as $weekQuest) {
+                $start = date('Y/m/d', $weekQuest->start);
+                $end = date('Y/m/d', $weekQuest->end);
+                $tableName = 'weekQuestData'.'_'.$start.'-'.$end;
+                $table = Yii::app()->db->schema->getTable($tableName);
+                if (empty($table)) {
+                    Yii::app()->db->createCommand('
+                        CREATE TABLE IF NOT EXISTS `'.$tableName.'` (
+                            `playerId` int(10) unsigned NOT NULL,
+                            `name` varchar(20) NOT NULL,
+                            `character` tinyint(4) NOT NULL,
+                            `groupId` int(10) unsigned NOT NULL,
+                            `battle` int(10) unsigned NOT NULL,
+                            `win` int(10) unsigned NOT NULL,
+                            `rank` int(10) unsigned NOT NULL,
+                            `isRank` tinyint(2) unsigned NOT NULL DEFAULT 0,
+                            `isMedal` tinyint(2) unsigned NOT NULL DEFAULT 0,
+                            `medalId` int(10) unsigned DEFAULT NULL,
+                            `createTime` int(10) unsigned NOT NULL,
+                            `updateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                            PRIMARY KEY (`playerId`),
+                            UNIQUE KEY `playerId` (`playerId`)
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+                    ')->execute();
+                }
+            }
+        }
+
+        $monthQuests = MonthQuest::model()->findAll();
+        if (!empty($monthQuests)) {
+            foreach ($monthQuests as $monthQuest) {
+                $month = date('Y/m', $monthQuest->start);
+                $tableName = 'monthQuestData'.'_'.$month;
+                $table = Yii::app()->db->schema->getTable($tableName);
+                if (empty($table)) {
+                    Yii::app()->db->createCommand('
+                        CREATE TABLE IF NOT EXISTS `'.$tableName.'` (
+                            `playerId` int(10) unsigned NOT NULL,
+                            `name` varchar(20) NOT NULL,
+                            `character` tinyint(4) NOT NULL,
+                            `battle` int(10) unsigned NOT NULL,
+                            `aveatk` int(10) unsigned NOT NULL,
+                            `avedef` int(10) unsigned NOT NULL,
+                            `avecombo` int(10) unsigned NOT NULL,
+                            `count` int(10) unsigned NOT NULL,
+                            `atkRank` int(10) unsigned NOT NULL,
+                            `defRank` int(10) unsigned NOT NULL,
+                            `comboRank` int(10) unsigned NOT NULL,
+                            `isAtkRank` tinyint(2) unsigned NOT NULL DEFAULT 0,
+                            `isDefRank` tinyint(2) unsigned NOT NULL DEFAULT 0,
+                            `isComboRank` tinyint(2) unsigned NOT NULL DEFAULT 0,
+                            `isAtkMedal` tinyint(2) unsigned NOT NULL DEFAULT 0,
+                            `isDefMedal` tinyint(2) unsigned NOT NULL DEFAULT 0,
+                            `isComboMedal` tinyint(2) unsigned NOT NULL DEFAULT 0,
+                            `atkMedalId` int(10) unsigned DEFAULT NULL,
+                            `defMedalId` int(10) unsigned DEFAULT NULL,
+                            `comboMedalId` int(10) unsigned DEFAULT NULL,
+                            `createTime` int(10) unsigned NOT NULL,
+                            `updateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                            PRIMARY KEY (`playerId`),
+                            UNIQUE KEY `playerId` (`playerId`)
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+                    ')->execute();
+                }
+            }
+        }
+
+        $groupQuests = GroupQuest::model()->findAll();
+        if (!empty($groupQuests)) {
+            foreach ($groupQuests as $groupQuest) {
+                $start = date('Y/m/d', $groupQuest->start);
+                $end = date('Y/m/d', $groupQuest->end);
+                $tableName = 'groupQuestData'.'_'.$start.'-'.$end;
+                $table = Yii::app()->db->schema->getTable($tableName);
+                if (empty($table)) {
+                    Yii::app()->db->createCommand('
+                        CREATE TABLE IF NOT EXISTS `'.$tableName.'` (
+                            `playerId` int(10) unsigned NOT NULL,
+                            `name` varchar(20) NOT NULL,
+                            `character` tinyint(4) NOT NULL,
+                            `groupId` int(10) unsigned NOT NULL,
+                            `battle` int(10) unsigned NOT NULL,
+                            `win` int(10) unsigned NOT NULL,
+                            `rank` int(10) unsigned NOT NULL,
+                            `medalId` int(10) unsigned DEFAULT NULL,
+                            `isRank` tinyint(2) unsigned NOT NULL DEFAULT 0,
+                            `isMedal` tinyint(2) unsigned NOT NULL DEFAULT 0,
+                            `createTime` int(10) unsigned NOT NULL,
+                            `updateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                            PRIMARY KEY (`playerId`),
+                            UNIQUE KEY `playerId` (`playerId`)
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+                    ')->execute();
+                }
+            }
+        }
+    }
+
+    public function run($args)
+    {
+        if (isset($args[0]) && $args[0]=='start') {
+            $this->start();
+        } else {
+            return $this->usage();
+        }
+
+    }
+}

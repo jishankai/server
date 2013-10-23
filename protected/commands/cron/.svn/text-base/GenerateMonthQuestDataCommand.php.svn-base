@@ -1,0 +1,45 @@
+<?php
+
+class GenerateMonthQuestDataCommand extends CConsoleCommand
+{
+    private function usage()
+    {
+        echo "Usage: GenerateMonthQuestData start\n"; 
+    }
+
+    private function start()
+    {
+        //table
+        $monthQuest = MonthQuest::model()->findBySql('SELECT * FROM monthQuest WHERE start>:time', array(':time'=>time()));
+        if (empty($monthQuest)) {
+            return ;
+        }
+        $month = date('Y/m', $monthQuest->start);
+        $tableName = 'monthQuestData'.'_'.$month;
+        $data = Yii::app()->db->createCommand('SELECT playerId FROM '.$tableName)->queryScalar();
+        if (empty($data)) {
+            $transaction = Yii::app()->db->beginTransaction();
+            try {
+                Yii::app()->db->createCommand('
+                    INSERT INTO '.$tableName.'(playerId, name, `character`, createTime) SELECT playerId, name, character, createTime FROM player 
+                    ')->execute();
+                $transaction->commit();
+            } catch (Exception $e) {
+                $transaction->rollback();
+                throw $e;
+            }
+        }
+    }
+
+    public function run($args)
+    {
+        if (isset($args[0]) && $args[0]=='start') {
+            $this->start();
+        } else {
+            return $this->usage();
+        }
+
+    }
+}
+
+

@@ -1,0 +1,35 @@
+<?php
+
+class ClearMatchPoleCommand extends CConsoleCommand
+{
+    private function usage()
+    {
+        echo "Usage: ClearMatchPole start\n"; 
+    }
+
+    private function start()
+    {
+        $transaction = Yii::app()->db->beginTransaction();
+        try {
+            //clear
+            $time = strtotime(date('Y-m-d',time())) - 60*60*24;
+            Yii::app()->db->createCommand("DELETE FROM pole WHERE applyTime<$time")->execute();
+
+            $transaction->commit();
+        } catch (Exception $e) {
+            $transaction->rollback();
+            throw $e;
+        }
+    }
+
+    public function run($args)
+    {
+        if (isset($args[0]) && $args[0]=='start') {
+            $this->start();
+        } else {
+            return $this->usage();
+        }
+
+    }
+}
+

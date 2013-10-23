@@ -1,0 +1,141 @@
+<?php
+
+class RobotWorldMatchCommand extends CConsoleCommand
+{
+    private function usage()
+    {
+        echo "Usage: RobotWorldMatch start\n"; 
+    }
+
+    private function start()
+    {
+        $startTime = $endTime = time();
+        $loopStartTime = 0;
+        while($endTime-$startTime < 60*4) {
+            if (time()-$loopStartTime <= 30) {
+                sleep(5);
+                continue;
+            }
+            $loopStartTime = time();
+            $time = time()-BATTLE_MATCH_TIME;
+            $playersInPole = Yii::app()->db->ensureConnection()->createCommand("SELECT COUNT(*) FROM pole WHERE applyTime>$time AND opponentId IS NULL GROUP BY id")->queryScalar();
+            if($playersInPole==1) {
+                $pid = pcntl_fork();
+                if ($pid == -1) {
+                    die('fork failed');
+                } else if ($pid == 0) {
+                    $this->battle();
+                    $startTime = 0;
+                    exit;
+                } else {
+                    if (time()-$startTime>210/*less than 60*4*/) {
+                        pcntl_wait($status);
+                    }
+                }
+            }
+            $endTime = time();
+        }
+    }
+
+    private function battle()
+    {
+        $id = time()%200;
+        $uid = Yii::app()->db->ensureConnection()->createCommand("SELECT uid FROM device WHERE id=$id")->queryScalar();
+        if ($uid) {
+            $sig = $this->signature(array('ver'=>'1.0', 'uid'=>$uid));
+            if ($lResponse = file_get_contents("http://seed.shang.adways.net/trunk/bubblepvp/index.php?r=user/loginApi&ver=1.0&sig=$sig&uid=".$uid)) {
+                $lJson = json_decode($lResponse);
+                $sid = $lJson->data->SID;
+                $isNew = 1;
+                $isMatch = false;
+                $start = 0;
+                $applyTime = time();
+                $battleId = NULL;
+                while(!$isMatch) {
+                    $mSig = $this->signature(array('ver'=>'1.0', 'isNew'=>$isNew, 'SID'=>$sid));
+                    $mResponse = file_get_contents("http://seed.shang.adways.net/trunk/bubblepvp/index.php?r=battle/matchApi&isNew=$isNew&SID=$sid&sig=$mSig&ver=1.0");
+                    $mJson = json_decode($mResponse);
+                    $isMatch = $mJson->data->match&&isset($mJson->data->start);
+                    if (isset($mJson->data->start)) {
+                        $start = $mJson->data->start > 0 ? $mJson->data->start : 0;
+                        $battleId = $mJson->data->battleId;
+                    } else if (time()-$applyTime > BATTLE_MATCH_TIME) {
+                        return ;//退出匹配
+                    } else {
+                        $isNew = 0;
+                        sleep(3);
+                    }
+                }
+
+                sleep($start+rand(1,5));
+                $sSig = $this->signature(array('ver'=>'1.0', 'SID'=>$sid));
+                $sResponse = file_get_contents("http://seed.shang.adways.net/trunk/bubblepvp/index.php?r=battle/startApi&SID=$sid&sig=$sSig&ver=1.0");
+                $sJson = json_decode($sResponse);
+                if (isset($sJson->data->time)) {
+                    $isOver = false;
+                    $round = 1;
+                    while(!$isOver) {
+                        $sResponse = file_get_contents("http://seed.shang.adways.net/trunk/bubblepvp/index.php?r=battle/startApi&SID=$sid&sig=$sSig&ver=1.0");
+                        sleep(BATTLE_ROUNDTIME);
+                        $animation = NULL;
+                        $atk = rand(0,300);
+                        $def = rand(0,150);
+                        $combo = rand(0,40);
+                        $recovery = 0;
+                        $bSig = $this->signature(array(
+                            'atk' => $atk,
+                            'def' => $def,
+                            'combo' => $combo,
+                            'recovery' => $recovery,
+                            'battleId' => $battleId,
+                            'round' => $round,
+                            'SID' => $sid,
+                            'ver' => '1.0',
+                        ));
+                        while(!$isOver and empty($animation)) {
+                            $bResponse = file_get_contents("http://seed.shang.adways.net/trunk/bubblepvp/index.php?r=battle/battleApi&atk=$atk&def=$def&combo=$combo&recovery=$recovery&battleId=$battleId&round=$round&SID=$sid&sig=$bSig&ver=1.0");
+                            $bJson = json_decode($bResponse);
+                            $isOver = $bJson->data->over;
+                            $animation = $bJson->data->animation;
+                            sleep(2);
+                        }
+                        $round++;
+                        $playerIds = Yii::app()->db->ensureConnection()->createCommand("SELECT playerId1, playerId2 FROM result WHERE battleId=$battleId")->queryRow();
+                        if (!$isOver) {
+                            $p1_animTime = $bJson->data->animation->$playerIds['playerId1']->atk_start - $bJson->data->animation->$playerIds['playerId1']->atk_end;
+                            $p2_animTime = $bJson->data->animation->$playerIds['playerId2']->atk_start - $bJson->data->animation->$playerIds['playerId2']->atk_end;
+                            $animTime = 2+2+ceil(15*($p1_animTime+$p2_animTime)/(24*30));
+                            sleep($animTime);
+                        }
+
+                    }
+                }
+
+            }
+        }
+    }
+    private function signature($params) 
+    {
+        if (array_key_exists('sig', $params)) unset($params['sig']);
+        if (array_key_exists('r', $params)) unset($params['r']); 
+
+        ksort($params);
+        $newArray = array();
+        foreach ($params as $key => $val) {
+            $newArray[] = $key. '=' . $val;
+        }
+        $string = implode('&', $newArray);
+        return md5($string . 'adways');
+    }
+
+    public function run($args)
+    {
+        if (isset($args[0]) && $args[0]=='start') {
+            $this->start();
+        } else {
+            return $this->usage();
+        }
+
+    }
+}
+
