@@ -113,7 +113,7 @@ class ApiJsonResponse
             'confVersion' => $this->confVersion,
             'data' => $this->data,
             'currentTime' => time(),
-        ));
+        ), JSON_NUMERIC_CHECK);
         if($return){
             return $json;
         }else{

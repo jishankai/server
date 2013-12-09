@@ -72,16 +72,20 @@ class MPlayer extends CActiveRecord
             'mailManager' => array(
                 'class' => 'MMailManager'
             ),
+            'processManager' => array(
+                'class' => 'MProcessManager'
+            ),
         );
     }
 
     public function initialize($event)
     {
         $this->initLogin();
-        $this->initPoint();
-        $this->initProps();
+        //$this->initPoint();
+        //$this->initProps();
         $this->initArms();
         $this->initSkills();
+        $this->initProcess();
     }
 
     public function clear()
@@ -93,6 +97,7 @@ class MPlayer extends CActiveRecord
         MSkills::model()->deleteByPk($this->playerId);
         MWeapons::model()->deleteByPk($this->playerId);
         MMail::model()->deleteAllByAttributes(array('playerId'=>$this->playerId));
+        MProcess::model()->deleteAllByAttributes(array('playerId'=>$this->playerId));
         MProps::model()->deleteAllByAttributes(array('playerId'=>$this->playerId));
 
         $this->delete();
@@ -186,6 +191,7 @@ class MPlayer extends CActiveRecord
 
     protected function checkLoginRewards($event)
     {
+        /*
         $today = date("Y-m-d 00:00:00", time()); 
         $loginDay = date("Y-m-d 00:00:00", $this->getLogin()->loginTime); 
         $registerDay = date("Y-m-d 00:00:00", $this->getLogin()->createTime);
@@ -205,5 +211,6 @@ class MPlayer extends CActiveRecord
                 MMail::model()->create($this->playerId, $desc, $props); 
             }
         }
+         */
     }
 }

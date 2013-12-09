@@ -15,7 +15,8 @@ class MSkillsManager extends CActiveRecordBehavior
     {
         $skills = new MSkills;
         $skills->playerId = $this->owner->playerId;
-        $skills->skills = AP_VALUE;
+        $skills->skillId = 1;
+        $skills->level = 1;
         $skills->createTime = $this->owner->createTime;
         $skills->save();
     }

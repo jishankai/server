@@ -26,6 +26,7 @@ class Controller extends CController
 
     public function filterCheckUpdate($filterChain)
     {
+        /*
         $ver = $_REQUEST['ver'];
         if ($ver < VERSION) {
             $this->response->setClientOutdated();//重新登录
@@ -33,6 +34,8 @@ class Controller extends CController
         } else {
             $filterChain->run();
         }
+         */
+        $filterChain->run();
             
     }
 

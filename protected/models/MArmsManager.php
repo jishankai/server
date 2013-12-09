@@ -15,7 +15,8 @@ class MArmsManager extends CActiveRecordBehavior
     {
         $arms = new MArms;
         $arms->playerId = $this->owner->playerId;
-        $arms->arms = AP_VALUE;
+        $arms->armId = 1;
+        $arms->level = 1;
         $arms->createTime = $this->owner->createTime;
         $arms->save();
     }

@@ -51,11 +51,10 @@ class MDevice extends CActiveRecord
      * @param string $uid The uid of user.
      * @return MPlayer The registered player.
      */
-    public function register($name, $character, $inviterId, $term, $os)
+    public function register($name, $inviterId, $term, $os)
     {
         $player = new MPlayer();
         $player->name = $name;
-        $player->character = $character;
         $player->createTime = time();
         $player->inviteCode = $this->createInviteCode();
         $player->inviterId = $inviterId;
@@ -64,7 +63,7 @@ class MDevice extends CActiveRecord
         //events
         $this->onRegister = array($player, 'initialize');
         $this->onRegister = array($player, 'rewardInviter');
-        $this->onRegister = array($player, 'rewardPaytoDownload');
+        //$this->onRegister = array($player, 'rewardPaytoDownload');
 
         $this->playerId = $player->playerId;
         $this->terminal = $term;

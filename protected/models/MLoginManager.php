@@ -29,9 +29,9 @@ class MLoginManager extends CActiveRecordBehavior
 
     public function login()
     {
-        $this->owner->onLogin = array($this->owner, 'checkLoginRewards');
-        $this->owner->onLogin = array($this->owner, 'checkByLogin');
-        $this->owner->onLogin = array($this->owner, 'checkByDuration');
+        //$this->owner->onLogin = array($this->owner, 'checkLoginRewards');
+        //$this->owner->onLogin = array($this->owner, 'checkByLogin');
+        //$this->owner->onLogin = array($this->owner, 'checkByDuration');
         $this->owner->onLogin = array($this->owner, 'updateLogin');
         $this->owner->onLogin = array($this->owner, 'summaryLogin');
 

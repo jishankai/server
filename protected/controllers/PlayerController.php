@@ -7,41 +7,28 @@ class PlayerController extends Controller
         return array(
             'checkUpdate',
             'getPlayerId',
-            'checkSig',
+            //'checkSig',
         );      
     }
 
     public function actionPlayerApi()
     {
         $player = MPlayer::model()->findByPk($this->playerId);
+        //$levelCount = MProcess::model()->countByAttributes(array('playerId'=>$this>playerId));
+        $process = $player->getProcess();
         $this->echoJsonData(array(
-            'playerId' => $player->playerId,
-            'playerChar' => $player->character,
+            'playerId' => (int)$player->playerId,
             'playerName' => $player->name,
-            'rank' => $player->getBattle()->rank, 
-            'score' => $player->getBattle()->score,
-            'win' => $player->getBattle()->win,
-            'draw' => $player->getBattle()->draw,
-            'lose' => $player->getBattle()->lose,
-            'conWin' => $player->getBattle()->conWin,
-            'conWinMax' => $player->getBattle()->conWinMax,
-            'conLose' => $player->getBattle()->conLose,
-            'conLoseMax' => $player->getBattle()->conLoseMax,
-            'aveatk' => $player->getStats()->aveatk,
-            'maxatk' => $player->getStats()->maxatk,
-            'avedef' => $player->getStats()->avedef,
-            'maxdef' => $player->getStats()->maxdef,
-            'avecombo' => $player->getStats()->avecombo,
-            'maxcombo' => $player->getStats()->maxcombo,	
-            'point' => $player->getPoint()->getValue(),
-            'remainTime' => $player->getPoint()->getRemainTime(),
-            'interval' => AP_CHANGEINTERVAL,
-            'changeMax' => AP_CHANGEMAX,
-            'propInfo' => $player->getProps(),			
-            'medalInfo' => $player->getMedal(),
-            'medalList' => $player->getMedalList(),
-            'inviteCode' => $player->inviteCode,
-            'totalInvite' => $player->inviteCount,
+            //'point' => $player->getPoint()->getValue(),
+            //'remainTime' => $player->getPoint()->getRemainTime(),
+            //'interval' => AP_CHANGEINTERVAL,
+            //'changeMax' => AP_CHANGEMAX,
+            'combats' => (int)$player->combats,
+            'stars' => (int)$player->stars,
+            'process' => array(
+                'count' => count($process),
+                'levels' => $process,
+            ),
         ));
     }
     
@@ -102,14 +89,4 @@ class PlayerController extends Controller
         ));
     }
 
-    //test
-    public function actionCpApi()
-    {
-        $player = MPlayer::model()->findByPk($this->playerId);
-        $this->echoJsonData(array(
-            'playerId' => $player->playerId,
-            'point' => $player->getPoint()->getValue(),
-            'remainTime' => $player->getPoint()->getRemainTime(),
-        ));
-    }
 }
