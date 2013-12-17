@@ -25,6 +25,7 @@ class UserController extends Controller
             $session = Yii::app()->session;
             $session['id'] = $device->id;
 
+        Yii::trace($session['id'], 'warning');
             $this->echoJsonData(array(
                 'result'=>false, 
                 'isOpenInvite'=>!$isVerify,
@@ -59,6 +60,7 @@ class UserController extends Controller
         $session = Yii::app()->session;
         $session->open();
         $id = $session['id'];
+        Yii::trace($id, 'warning');
         if (empty($id)) {
             $this->response->setError(102, '重新登录');//重新登录
             $this->response->render();
@@ -71,10 +73,12 @@ class UserController extends Controller
         if (MPlayer::model()->isNameExist(trim($name))) {
             throw new MException('用户名已被注册');
         }
+        /*
         $namelen = (strlen($name)+mb_strlen($name,"UTF8"))/2;
         if ($namelen>12) {
             throw new MException('用户名超过最大长度');
         }
+         */
         $pattern = '/^[a-zA-Z0-9\x{30A0}-\x{30FF}\x{3040}-\x{309F}\x{4E00}-\x{9FBF}]+$/u';
         if (!preg_match($pattern, $name)) {
             throw new MException("用户名含有特殊字符");
