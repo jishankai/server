@@ -24,8 +24,6 @@ class UserController extends Controller
             }
             $session = Yii::app()->session;
             $session['id'] = $device->id;
-
-        Yii::trace($session['id'], 'warning');
             $this->echoJsonData(array(
                 'result'=>false, 
                 'isOpenInvite'=>!$isVerify,
@@ -60,7 +58,6 @@ class UserController extends Controller
         $session = Yii::app()->session;
         $session->open();
         $id = $session['id'];
-        Yii::trace($id, 'warning');
         if (empty($id)) {
             $this->response->setError(102, '重新登录');//重新登录
             $this->response->render();

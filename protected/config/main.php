@@ -85,6 +85,7 @@ return array(
             'connectionString' => 'mysql:host=127.0.0.1;dbname=miwu',
             'emulatePrepare' => true,
             'username' => 'root',
+            'enableProfiling' => true,
             'password' => '',
             'charset' => 'utf8',
         ),
@@ -100,11 +101,11 @@ return array(
                     'levels'=>'error, warning',
                 ),
                 // uncomment the following to show log messages on web pages
-                /*
                 array(
                     'class'=>'CWebLogRoute',
+                    'enabled' =>true,
+                                                                'categories' => 'system.db.*',
                 ),
-                 */
             ),
         ),
     ),

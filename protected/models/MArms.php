@@ -39,12 +39,6 @@ class MArms extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('playerId, armId, createTime, updateTime', 'required'),
-			array('armId, level', 'numerical', 'integerOnly'=>true),
-			array('playerId, createTime', 'length', 'max'=>10),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, playerId, armId, level, createTime, updateTime', 'safe', 'on'=>'search'),
 		);
 	}
 

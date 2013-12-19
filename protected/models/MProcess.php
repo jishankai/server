@@ -37,12 +37,6 @@ class MProcess extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('processId, playerId, level', 'required'),
-			array('stars', 'numerical', 'integerOnly'=>true),
-			array('processId, playerId, level', 'length', 'max'=>10),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('processId, playerId, level, stars', 'safe', 'on'=>'search'),
 		);
 	}
 

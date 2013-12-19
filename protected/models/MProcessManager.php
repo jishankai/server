@@ -13,7 +13,7 @@ class MProcessManager extends CActiveRecordBehavior
 
     public function initProcess()
     {
-        $process = new MProcess;
+        $process = new MProcess();
         $process->playerId = $this->owner->playerId;
         $process->level = 1;
         $process->stars = 0;
