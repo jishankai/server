@@ -20,13 +20,12 @@ class BattleController extends Controller
             $process = $player->getProcess();
         }
         $this->echoJsonData(array(
-            //'playerId' => (int)$player->playerId,
+            'playerId' => (int)$player->playerId,
             //'point' => $player->getPoint()->getValue(),
             //'remainTime' => $player->getPoint()->getRemainTime(),
             //'interval' => AP_CHANGEINTERVAL,
             //'changeMax' => AP_CHANGEMAX,
             'process' => array(
-                'playerId' => (int)$this->playerId,
                 'count' => count($process),
                 'levels' => $process,
             ),
