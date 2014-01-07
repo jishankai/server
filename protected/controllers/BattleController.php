@@ -2,28 +2,33 @@
 
 class BattleController extends Controller
 {
-    private $_match;
-    private $_start;
-    private $_opponent;
-    private $_cp;
-    private $_cpAuto;
-    private $_time;
-    private $_battleId;
-    private $_sPole; //self
-    private $_oPole; //opponent
-
-    private $_over;
-    private $_result;
-    private $_animation;
-
     public function filters()
     {
         return array(
             'checkUpdate',
             'getPlayerId',
-            'checkSig',
+            //'checkSig',
         );    
     }
 
-   ``
+    public function actionWinApi($level, $stars) {
+        $player = MPlayer::model()->findByPk($this->playerId);
+        $process = $player->getProcess();
+        $player->updateProcessStars($level, 3);
+        if ($level==count($process)) {
+            $player->initProcessByLevel(++$level);
+            $process = $player->getProcess();
+        }
+        $this->echoJsonData(array(
+            //'playerId' => (int)$player->playerId,
+            //'point' => $player->getPoint()->getValue(),
+            //'remainTime' => $player->getPoint()->getRemainTime(),
+            //'interval' => AP_CHANGEINTERVAL,
+            //'changeMax' => AP_CHANGEMAX,
+            'process' => array(
+                'count' => count($process),
+                'levels' => $process,
+            ),
+        ));
+    }
 }

@@ -1692,3 +1692,79 @@ Stack trace:
 #14 {main}
 REQUEST_URI=/~jishankai/miwu/index.php?r=user/registerApi&name=4ff43&inviterCode=&term=iPhone%20Simulator&os=6.1&ver=1.0
 ---
+2013/12/21 02:46:30 [error] [exception.MException] exception 'MException' with message '未登录' in /Users/jishankai/Sites/miwu/protected/controllers/UserController.php:68
+Stack trace:
+#0 [internal function]: UserController->actionRegisterApi('4ff43', '', 'iPhone Simulato...', '6.1')
+#1 /Users/jishankai/Sites/yii/framework/web/actions/CAction.php(108): ReflectionMethod->invokeArgs(Object(UserController), Array)
+#2 /Users/jishankai/Sites/yii/framework/web/actions/CInlineAction.php(47): CAction->runWithParamsInternal(Object(UserController), Object(ReflectionMethod), Array)
+#3 /Users/jishankai/Sites/yii/framework/web/CController.php(308): CInlineAction->runWithParams(Array)
+#4 /Users/jishankai/Sites/yii/framework/web/filters/CFilterChain.php(133): CController->runAction(Object(CInlineAction))
+#5 /Users/jishankai/Sites/miwu/protected/components/Controller.php(38): CFilterChain->run()
+#6 /Users/jishankai/Sites/yii/framework/web/filters/CInlineFilter.php(58): Controller->filterCheckUpdate(Object(CFilterChain))
+#7 /Users/jishankai/Sites/yii/framework/web/filters/CFilterChain.php(130): CInlineFilter->filter(Object(CFilterChain))
+#8 /Users/jishankai/Sites/yii/framework/web/CController.php(291): CFilterChain->run()
+#9 /Users/jishankai/Sites/yii/framework/web/CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#10 /Users/jishankai/Sites/yii/framework/web/CWebApplication.php(282): CController->run('registerApi')
+#11 /Users/jishankai/Sites/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('user/registerAp...')
+#12 /Users/jishankai/Sites/yii/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#13 /Users/jishankai/Sites/miwu/index.php(13): CApplication->run()
+#14 {main}
+REQUEST_URI=/~jishankai/miwu/index.php?r=user/registerApi&name=4ff43&inviterCode=&term=iPhone%20Simulator&os=6.1&ver=1.0
+---
+2013/12/22 01:45:18 [error] [exception.MException] exception 'MException' with message '未登录' in /Users/jishankai/Sites/miwu/protected/controllers/UserController.php:68
+Stack trace:
+#0 [internal function]: UserController->actionRegisterApi('4ff43', '', 'iPhone Simulato...', '6.1')
+#1 /Users/jishankai/Sites/yii/framework/web/actions/CAction.php(108): ReflectionMethod->invokeArgs(Object(UserController), Array)
+#2 /Users/jishankai/Sites/yii/framework/web/actions/CInlineAction.php(47): CAction->runWithParamsInternal(Object(UserController), Object(ReflectionMethod), Array)
+#3 /Users/jishankai/Sites/yii/framework/web/CController.php(308): CInlineAction->runWithParams(Array)
+#4 /Users/jishankai/Sites/yii/framework/web/filters/CFilterChain.php(133): CController->runAction(Object(CInlineAction))
+#5 /Users/jishankai/Sites/miwu/protected/components/Controller.php(38): CFilterChain->run()
+#6 /Users/jishankai/Sites/yii/framework/web/filters/CInlineFilter.php(58): Controller->filterCheckUpdate(Object(CFilterChain))
+#7 /Users/jishankai/Sites/yii/framework/web/filters/CFilterChain.php(130): CInlineFilter->filter(Object(CFilterChain))
+#8 /Users/jishankai/Sites/yii/framework/web/CController.php(291): CFilterChain->run()
+#9 /Users/jishankai/Sites/yii/framework/web/CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#10 /Users/jishankai/Sites/yii/framework/web/CWebApplication.php(282): CController->run('registerApi')
+#11 /Users/jishankai/Sites/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('user/registerAp...')
+#12 /Users/jishankai/Sites/yii/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#13 /Users/jishankai/Sites/miwu/index.php(13): CApplication->run()
+#14 {main}
+REQUEST_URI=/~jishankai/miwu/index.php?r=user/registerApi&name=4ff43&inviterCode=&term=iPhone%20Simulator&os=6.1&ver=1.0
+---
+2013/12/22 17:15:51 [error] [exception.MException] exception 'MException' with message '未登录' in /Users/jishankai/Sites/miwu/protected/controllers/UserController.php:68
+Stack trace:
+#0 [internal function]: UserController->actionRegisterApi('4ff43', '', 'iPhone Simulato...', '6.1')
+#1 /Users/jishankai/Sites/yii/framework/web/actions/CAction.php(108): ReflectionMethod->invokeArgs(Object(UserController), Array)
+#2 /Users/jishankai/Sites/yii/framework/web/actions/CInlineAction.php(47): CAction->runWithParamsInternal(Object(UserController), Object(ReflectionMethod), Array)
+#3 /Users/jishankai/Sites/yii/framework/web/CController.php(308): CInlineAction->runWithParams(Array)
+#4 /Users/jishankai/Sites/yii/framework/web/filters/CFilterChain.php(133): CController->runAction(Object(CInlineAction))
+#5 /Users/jishankai/Sites/miwu/protected/components/Controller.php(38): CFilterChain->run()
+#6 /Users/jishankai/Sites/yii/framework/web/filters/CInlineFilter.php(58): Controller->filterCheckUpdate(Object(CFilterChain))
+#7 /Users/jishankai/Sites/yii/framework/web/filters/CFilterChain.php(130): CInlineFilter->filter(Object(CFilterChain))
+#8 /Users/jishankai/Sites/yii/framework/web/CController.php(291): CFilterChain->run()
+#9 /Users/jishankai/Sites/yii/framework/web/CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#10 /Users/jishankai/Sites/yii/framework/web/CWebApplication.php(282): CController->run('registerApi')
+#11 /Users/jishankai/Sites/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('user/registerAp...')
+#12 /Users/jishankai/Sites/yii/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#13 /Users/jishankai/Sites/miwu/index.php(13): CApplication->run()
+#14 {main}
+REQUEST_URI=/~jishankai/miwu/index.php?r=user/registerApi&name=4ff43&inviterCode=&term=iPhone%20Simulator&os=6.1&ver=1.0
+---
+2013/12/23 13:49:56 [error] [exception.MException] exception 'MException' with message '未登录' in /Users/jishankai/Sites/miwu/protected/controllers/UserController.php:68
+Stack trace:
+#0 [internal function]: UserController->actionRegisterApi('4ff43', '', 'iPhone Simulato...', '6.1')
+#1 /Users/jishankai/Sites/yii/framework/web/actions/CAction.php(108): ReflectionMethod->invokeArgs(Object(UserController), Array)
+#2 /Users/jishankai/Sites/yii/framework/web/actions/CInlineAction.php(47): CAction->runWithParamsInternal(Object(UserController), Object(ReflectionMethod), Array)
+#3 /Users/jishankai/Sites/yii/framework/web/CController.php(308): CInlineAction->runWithParams(Array)
+#4 /Users/jishankai/Sites/yii/framework/web/filters/CFilterChain.php(133): CController->runAction(Object(CInlineAction))
+#5 /Users/jishankai/Sites/miwu/protected/components/Controller.php(38): CFilterChain->run()
+#6 /Users/jishankai/Sites/yii/framework/web/filters/CInlineFilter.php(58): Controller->filterCheckUpdate(Object(CFilterChain))
+#7 /Users/jishankai/Sites/yii/framework/web/filters/CFilterChain.php(130): CInlineFilter->filter(Object(CFilterChain))
+#8 /Users/jishankai/Sites/yii/framework/web/CController.php(291): CFilterChain->run()
+#9 /Users/jishankai/Sites/yii/framework/web/CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#10 /Users/jishankai/Sites/yii/framework/web/CWebApplication.php(282): CController->run('registerApi')
+#11 /Users/jishankai/Sites/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('user/registerAp...')
+#12 /Users/jishankai/Sites/yii/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#13 /Users/jishankai/Sites/miwu/index.php(13): CApplication->run()
+#14 {main}
+REQUEST_URI=/~jishankai/miwu/index.php?r=user/registerApi&name=4ff43&inviterCode=&term=iPhone%20Simulator&os=6.1&ver=1.0
+---

@@ -20,6 +20,19 @@ class MProcessManager extends CActiveRecordBehavior
         $process->createTime = $this->owner->createTime;
         $process->save();
     }
+    public function updateProcessStars($level, $stars)
+    {
+        Yii::app()->db->createCommand("UPDATE process SET stars=:stars WHERE level=:level")->bindValues(array(':stars'=>$stars, ':level'=>$level))->execute();
+    }
+    public function initProcessByLevel($level)
+    {
+        $process = new MProcess();
+        $process->playerId = $this->owner->playerId;
+        $process->level = $level;;
+        $process->stars = 0;
+        $process->createTime = $this->owner->createTime;
+        $process->save();
+    }
     public function getProcess()
     {
         if (isset($this->_process)) {
