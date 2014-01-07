@@ -35,9 +35,9 @@ class MProcessManager extends CActiveRecordBehavior
     }
     public function getProcess()
     {
-        if (isset($this->_process)) {
-            return $this->_process;
-        }
+        //if (isset($this->_process)) {
+        //    return $this->_process;
+        //}
         $this->_process = MProcess::model()->findAllbyAttributes(array('playerId'=>$this->owner->playerId));
         return $this->_process;
     }
