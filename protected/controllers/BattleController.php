@@ -26,6 +26,7 @@ class BattleController extends Controller
             //'interval' => AP_CHANGEINTERVAL,
             //'changeMax' => AP_CHANGEMAX,
             'process' => array(
+                'playerId' => $this->playerId,
                 'count' => count($process),
                 'levels' => $process,
             ),
