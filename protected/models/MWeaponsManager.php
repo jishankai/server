@@ -18,4 +18,14 @@ class MWeaponsManager extends CActiveRecordBehavior
         }
         return $this->_weapons = MWeapons::model()->findByPk($this->owner->playerId);
     }
+
+    public function initWeapons()
+    {    
+        $weapons = new MWeapons;
+        $weapons->playerId = $this->owner->playerId;
+        $weapons->weaponId = 1;
+        $weapons->level = 1;
+        $weapons->createTime = $this->owner->createTime;
+        $weapons->save();
+    }
 }

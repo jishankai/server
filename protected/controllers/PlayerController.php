@@ -18,7 +18,9 @@ class PlayerController extends Controller
         $this->echoJsonData(array(
             'playerId' => (int)$player->playerId,
             'playerName' => $player->name,
-            //'point' => $player->getPoint()->getValue(),
+            'coin' => $player->coin,
+            'jewel' => $player->jewel,
+            'point' => $player->getPoint()->getValue(),
             //'remainTime' => $player->getPoint()->getRemainTime(),
             //'interval' => AP_CHANGEINTERVAL,
             //'changeMax' => AP_CHANGEMAX,

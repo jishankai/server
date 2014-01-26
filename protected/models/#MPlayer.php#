@@ -80,14 +80,10 @@ class MPlayer extends CActiveRecord
 
     public function initialize($event)
     {
-        $this->coin = 1000;
-        $this->jewel = 100;
-        $this->saveAttributes(array('coin', 'jewel'));
         $this->initLogin();
-        $this->initPoint();
+        //$this->initPoint();
         //$this->initProps();
         $this->initArms();
-        $this->initWeapon();
         $this->initSkills();
         $this->initProcess();
     }
@@ -119,8 +115,8 @@ class MPlayer extends CActiveRecord
                 $gift = $inviterRewards[$inviter->inviteCount];
                 $giftDetail = explode('_', $gift);
                 //$props = Util::loadConfig('props');
-                //$desc = $props[$giftDetail[0]]['desc'].'\n æ‹›å¾…'.$inviter->inviteCount.'äººèŽ·å–çš„å¥–åŠ±';
-                $desc = 'é‚€è¯·'.$inviter->inviteCount.'äººèŽ·å–çš„å¥–åŠ±';
+                //$desc = $props[$giftDetail[0]]['desc'].'\n ‘ÕÐ‘´ý'.$inviter->inviteCount.'‘ÈË‘»ñ‘È¡‘µÄ‘½±‘Àø';
+                $desc = '‘Ñû‘Çë'.$inviter->inviteCount.'‘ÈË‘»ñ‘È¡‘µÄ‘½±‘Àø';
                 MMail::model()->create($this->inviterId, $desc, $gift);
             }
         }
@@ -136,7 +132,7 @@ class MPlayer extends CActiveRecord
             $rewards = $setting['rewards'];
             $propsSet = explode(',', $rewards);
             foreach ($propsSet as $props) {
-                $desc = "ä»˜è´¹ä¸‹è½½åº”æ´å¤§ç¤¼åŒ…";
+                $desc = "‘¸¶‘·Ñ‘ÏÂ‘ÔØ‘Ó¦‘Ô®‘´ó‘Àñ‘°ü";
                 MMail::model()->create($this->playerId, $desc, $props); 
             }
         }
@@ -211,7 +207,7 @@ class MPlayer extends CActiveRecord
             $rewards = Util::loadConfig('loginRewards');
             $propsSet = explode(',', $rewards[$day]);
             foreach ($propsSet as $props) {
-                $desc = "æ–°ç”¨æˆ·ç™»é™†å¥–åŠ±$day";
+                $desc = "‘ÐÂ‘ÓÃ‘»§‘µÇ‘Â½‘½±‘Àø$day";
                 MMail::model()->create($this->playerId, $desc, $props); 
             }
         }
