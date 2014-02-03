@@ -11,7 +11,23 @@ class BattleController extends Controller
         );    
     }
 
-    public function actionWinApi($level, $stars) {
+    public function actionStartApi()
+    {
+        $player = MPlayer::model()->findByPk($this->playerId);
+        $point = $player->getPoint();
+
+        $point->check();
+        
+        $point->sub();
+        $this->echoJsonData(array(
+            'result' => true,
+            'cp' => $point->getValue();
+            'cpTime' => $point->getRemainTime();
+        ));
+    }
+
+    public function actionWinApi($level, $stars)
+    {
         $player = MPlayer::model()->findByPk($this->playerId);
         $process = $player->getProcess();
         $player->updateProcessStars($level, 3);
@@ -31,4 +47,5 @@ class BattleController extends Controller
             ),
         ));
     }
+
 }

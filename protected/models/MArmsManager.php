@@ -28,4 +28,5 @@ class MArmsManager extends CActiveRecordBehavior
         }
         return $this->_arms = MArms::model()->findByPk($this->owner->playerId);
     }
+    
 }

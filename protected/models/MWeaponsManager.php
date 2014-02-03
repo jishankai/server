@@ -10,7 +10,7 @@
 class MWeaponsManager extends CActiveRecordBehavior
 {
     private $_weapons;
-
+    
     public function getWeapons()
     {
         if (isset($this->_weapons)) {
@@ -28,4 +28,5 @@ class MWeaponsManager extends CActiveRecordBehavior
         $weapons->createTime = $this->owner->createTime;
         $weapons->save();
     }
+
 }
