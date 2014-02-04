@@ -26,6 +26,7 @@ class PlayerController extends Controller
             //'changeMax' => AP_CHANGEMAX,
             'combats' => (int)$player->combats,
             'stars' => (int)$player->stars,
+            's1' => 
             'process' => array(
                 'count' => count($process),
                 'levels' => $process,
