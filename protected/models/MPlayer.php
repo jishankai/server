@@ -217,4 +217,41 @@ class MPlayer extends CActiveRecord
         }
          */
     }
+
+    public function getS1()
+    {
+        return MArms::model()->findByAttributes(array('playerId'=>$this->playerId, 'armId'=>1));
+    }
+    public function getS2()
+    {
+        return MArms::model()->findByAttributes(array('playerId'=>$this->playerId, 'armId'=>2));
+    }
+    public function getS3()
+    {
+        return MArms::model()->findByAttributes(array('playerId'=>$this->playerId, 'armId'=>3));
+    }
+    public function getS4()
+    {
+        return MArms::model()->findByAttributes(array('playerId'=>$this->playerId, 'armId'=>4));
+    }
+    public function getS5()
+    {
+        return MArms::model()->findByAttributes(array('playerId'=>$this->playerId, 'armId'=>5));
+    }
+    public function getS6()
+    {
+        return MArms::model()->findByAttributes(array('playerId'=>$this->playerId, 'armId'=>6));
+    }
+    public function getS7()
+    {
+        return MArms::model()->findByAttributes(array('playerId'=>$this->playerId, 'armId'=>7));
+    }
+    public function getS8()
+    {
+        return MArms::model()->findByAttributes(array('playerId'=>$this->playerId, 'armId'=>8));
+    }
+    public function getS9()
+    {
+        return MArms::model()->findByAttributes(array('playerId'=>$this->playerId, 'armId'=>9));
+    }
 }
