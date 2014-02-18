@@ -32,7 +32,7 @@ class BattleController extends Controller
         $player->coin+=$coin;
         $player->saveAttributes(array('coin'));
         $process = $player->getProcess();
-        $player->updateProcessStars($level, 3);
+        $player->updateProcessStars($level,$stars);
         if ($level==count($process)) {
             $player->initProcessByLevel(++$level);
             $process = $player->getProcess();
