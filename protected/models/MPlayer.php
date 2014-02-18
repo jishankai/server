@@ -87,7 +87,7 @@ class MPlayer extends CActiveRecord
         $this->initPoint();
         //$this->initProps();
         $this->initArms();
-        $this->initWeapon();
+        $this->initWeapons();
         $this->initSkills();
         $this->initProcess();
     }

@@ -23,7 +23,7 @@ class MWeaponsManager extends CActiveRecordBehavior
     {    
         $weapons = new MWeapons;
         $weapons->playerId = $this->owner->playerId;
-        $weapons->weaponId = 1;
+        $weapons->weaponId = SCEPTER_FISH_ID;
         $weapons->level = 1;
         $weapons->createTime = $this->owner->createTime;
         $weapons->save();

@@ -19,6 +19,62 @@ class MArmsManager extends CActiveRecordBehavior
         $arms->level = 1;
         $arms->createTime = $this->owner->createTime;
         $arms->save();
+        
+        $arms = new MArms;
+        $arms->playerId = $this->owner->playerId;
+        $arms->armId = 2;
+        $arms->level = 0;
+        $arms->createTime = $this->owner->createTime;
+        $arms->save();
+
+        $arms = new MArms;
+        $arms->playerId = $this->owner->playerId;
+        $arms->armId = 3;
+        $arms->level = 0;
+        $arms->createTime = $this->owner->createTime;
+        $arms->save();
+
+        $arms = new MArms;
+        $arms->playerId = $this->owner->playerId;
+        $arms->armId = 4;
+        $arms->level = 0;
+        $arms->createTime = $this->owner->createTime;
+        $arms->save();
+
+        $arms = new MArms;
+        $arms->playerId = $this->owner->playerId;
+        $arms->armId = 5;
+        $arms->level = 0;
+        $arms->createTime = $this->owner->createTime;
+        $arms->save();
+
+        $arms = new MArms;
+        $arms->playerId = $this->owner->playerId;
+        $arms->armId = 6;
+        $arms->level = 0;
+        $arms->createTime = $this->owner->createTime;
+        $arms->save();
+
+        $arms = new MArms;
+        $arms->playerId = $this->owner->playerId;
+        $arms->armId = 7;
+        $arms->level = 0;
+        $arms->createTime = $this->owner->createTime;
+        $arms->save();
+
+        $arms = new MArms;
+        $arms->playerId = $this->owner->playerId;
+        $arms->armId = 8;
+        $arms->level = 0;
+        $arms->createTime = $this->owner->createTime;
+        $arms->save();
+
+        $arms = new MArms;
+        $arms->playerId = $this->owner->playerId;
+        $arms->armId = 9;
+        $arms->level = 0;
+        $arms->createTime = $this->owner->createTime;
+        $arms->save();
     }
 
     public function getArms()
