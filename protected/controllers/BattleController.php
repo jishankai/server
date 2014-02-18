@@ -26,9 +26,11 @@ class BattleController extends Controller
         ));
     }
 
-    public function actionWinApi($level, $stars)
+    public function actionWinApi($level, $stars, $coin=0, $equipId=NULL)
     {
         $player = MPlayer::model()->findByPk($this->playerId);
+        $player->coin+=$coin;
+        $player->saveAttributes(array('coin'));
         $process = $player->getProcess();
         $player->updateProcessStars($level, 3);
         if ($level==count($process)) {
@@ -37,6 +39,7 @@ class BattleController extends Controller
         }
         $this->echoJsonData(array(
             'playerId' => (int)$player->playerId,
+            'coin'=>$player->coin,
             //'point' => $player->getPoint()->getValue(),
             //'remainTime' => $player->getPoint()->getRemainTime(),
             //'interval' => AP_CHANGEINTERVAL,
