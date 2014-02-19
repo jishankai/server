@@ -29,4 +29,8 @@ class MWeaponsManager extends CActiveRecordBehavior
         $weapons->save();
     }
 
+    public function getWeaponById($weaponId)
+    {
+        return MWeapons::model()->findByAttributes(array('playerId'=>$this->owner->playerId, 'weaponId'=>$weaponId));
+    }
 }

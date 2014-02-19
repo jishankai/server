@@ -26,11 +26,25 @@ class BattleController extends Controller
         ));
     }
 
-    public function actionWinApi($level, $stars, $coin=0, $equipId=NULL)
+    public function actionWinApi($level, $stars, $coin=0, $weaponId=NULL)
     {
         $player = MPlayer::model()->findByPk($this->playerId);
-        $player->coin+=$coin;
-        $player->saveAttributes(array('coin'));
+        if ($coin) {
+            $player->coin+=$coin;
+            $player->saveAttributes(array('coin'));
+        }
+        if (isset($weaponId)) {
+          $weapon = $player->getWeaponById($weaponId);
+          if (!isset($weapon)) {
+            $weapon = new MWeapons;
+            $weapon->playerId = $this->playerId;
+            $weapon->weaponId = $weaponId;
+            $weapon->level = 1;
+            $weapon->createTime = now();
+            $weapon->save();
+          }
+        }
+                    
         $process = $player->getProcess();
         $player->updateProcessStars($level,$stars);
         if ($level==count($process)) {

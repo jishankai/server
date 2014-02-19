@@ -11,7 +11,7 @@ class WeaponsController extends Controller
         );      
     }
 
-    public function actionWeaponsApi($weaponId)
+    public function actionBuyApi($weaponId)
     {
         $weapon = MWeapons::model()->findByAttributes(array('playerId'=>$this->playerId, 'weaponId'->$weaponId));
         if (isset($weapon)) {
