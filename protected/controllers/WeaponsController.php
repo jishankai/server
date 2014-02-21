@@ -28,4 +28,14 @@ class WeaponsController extends Controller
 
         $this->echoJsonData(array('result'=>true));
     }
+
+    public function actionInfoApi()
+    {
+        $player = MPlayer::model()->findByPk($this->playerId);
+
+        $this->echoJsonData(array(
+            'isSuccess'=>true,
+            'weapons'=>$player->getWeapons()
+        ));
+    }
 }
