@@ -40,12 +40,12 @@ class MWeapons extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('playerId, weaponId, quality, createTime, updateTime', 'required'),
-			array('weaponId, quality, level', 'numerical', 'integerOnly'=>true),
+			array('playerId, weaponId, quality, isEquiped, createTime, updateTime', 'required'),
+			array('weaponId, quality, level, isEquiped', 'numerical', 'integerOnly'=>true),
 			array('playerId, createTime', 'length', 'max'=>10),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, playerId, weaponId, quality, level, createTime, updateTime', 'safe', 'on'=>'search'),
+			array('id, playerId, weaponId, quality, level, isEquiped, createTime, updateTime', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -92,6 +92,7 @@ class MWeapons extends CActiveRecord
 		$criteria->compare('weaponId',$this->weaponId);
 		$criteria->compare('quality',$this->quality);
 		$criteria->compare('level',$this->level);
+        $criteria->compare('isEquiped',$this->isEquiped);
 		$criteria->compare('createTime',$this->createTime,true);
 		$criteria->compare('updateTime',$this->updateTime,true);
 

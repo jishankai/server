@@ -38,4 +38,26 @@ class WeaponsController extends Controller
             'weapons'=>$player->getWeapons()
         ));
     }
+
+    public function actionEquipApi($weaponId)
+    {
+        $player = MPlayer::model()->findByPk($this->playerId);
+
+        $player->setWeaponEquiped($weaponId, 1);
+
+        $this->echoJsonData(array(
+            'isSuccess'=>true,
+        ));
+    }
+
+    public function actionUnEquipApi($weaponId)
+    {
+        $player = MPlayer::model()->findByPk($this->playerId);
+
+        $player->setWeaponEquiped($weaponId, 0);
+
+        $this->echoJsonData(array(
+            'isSuccess'=>true,
+        ));
+    }
 }
